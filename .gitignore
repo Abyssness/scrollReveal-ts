@@ -1,0 +1,28 @@
+# 编辑器
+.vscode
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+#Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# npm package
+node_modules/
+jspm_packages/or
+
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# ts 文件生成目录
+src/assets/tsJS/
+
