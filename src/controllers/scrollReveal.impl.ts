@@ -36,7 +36,7 @@ class scrollRevealImpl implements scrollReveal {
   (window as any).mozRequestAnimationFrame ||
   function (callback) {
     window.setTimeout(callback, 1000 / 60);
-};
+  };
   private docElem: HTMLElement;
   private options: scrollRevealOptions;
   private styleBank: styleBank = {};
@@ -319,15 +319,15 @@ class scrollRevealImpl implements scrollReveal {
       left: offsetLeft
     }
   }
-  public isElementInViewport(el: HTMLElement, height?: number) {
+  public isElementInViewport(el: HTMLElement, viewportFactor?: number) {
     let scrolled = this.docElem.scrollTop + this.docElem.offsetTop;
 		if (this.docElem == window.document.documentElement) scrolled = window.pageYOffset;
 		let viewed = scrolled + this.getViewportH(),
       elH = el.offsetHeight,
       elTop = this.getOffset(el).top,
       elBottom = elTop + elH,
-      h = height || 0;
-    return (elTop + elH * h) <= viewed
+      vf = viewportFactor || 0;
+    return (elTop + elH * vf) <= viewed
       && (elBottom) >= scrolled
       || (el.currentStyle? el.currentStyle : window.getComputedStyle(el, null)).position == 'fixed';
   }
