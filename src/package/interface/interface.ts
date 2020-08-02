@@ -37,6 +37,11 @@ interface scrollRevealOptions {
     queryCondition?: string;
     [propName: string]: any;
 }
+
+interface scrollRevealOptions {
+    time?: number;
+    delay?: number;
+}
 interface styleBank {
     [index: string]: string | null;
 }
@@ -56,6 +61,14 @@ interface parsed {
     easing?: string;
     over?: string;
     opacity?: number;
+}
+interface pluginFunObject {
+    init: any;
+    animated: any;
+    animatedTimes: number;
+    reset?: any;
+    clear?: any;
+    [propName: string]: any;
 }
 interface scrollReveal {
     update(el: HTMLElement): void;

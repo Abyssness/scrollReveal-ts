@@ -1,4 +1,3 @@
-"use strict";
 /// <reference path="./../interface/interface.ts" />
 var ScrollRevealCore = /** @class */ (function () {
     function ScrollRevealCore() {
@@ -102,7 +101,6 @@ var ScrollRevealCore = /** @class */ (function () {
         var _this_1 = this;
         this.elems.forEach(function (el, i) {
             _this_1.update.call(_this_1._this, el);
-            ;
         });
         this.scrolled = false;
     };
@@ -193,4 +191,19 @@ var ScrollRevealCore = /** @class */ (function () {
     });
     ScrollRevealCore.instance = new ScrollRevealCore();
     return ScrollRevealCore;
+}());
+/// <reference path="./../interface/interface.ts" />
+/// <reference path="./scrollReveal-core.ts" />
+var ScrollReveal = /** @class */ (function () {
+    function ScrollReveal() {
+        this.scrollreveal = ScrollRevealCore.getInstance;
+    }
+    // 子类构造器中调用
+    ScrollReveal.prototype.setCore = function () {
+        this.scrollreveal.scrollRevealOptions(this.getOptions, this.update, this);
+    };
+    ScrollReveal.prototype.getInstance = function () {
+        return this.scrollreveal;
+    };
+    return ScrollReveal;
 }());

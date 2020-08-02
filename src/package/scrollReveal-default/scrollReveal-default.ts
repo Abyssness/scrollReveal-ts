@@ -64,13 +64,13 @@ class ScrollRevealDefault extends ScrollReveal{
             //  防止CSS与编辑过的CSS发生冲突。
             if (!this.options.reset) {
                 setTimeout(() => {
-                if (style != "") {
-                    el.setAttribute('style', style as string);
-                } else {
-                    el.removeAttribute('style');
-                }
-                el.setAttribute(`${this.options.queryCondition}-complete`,"true");
-                (this.options as {complete: (el?: HTMLElement) => void}).complete(el);
+                  if (style != "") {
+                      el.setAttribute('style', style as string);
+                  } else {
+                      el.removeAttribute('style');
+                  }
+                  el.setAttribute(`${this.options.queryCondition}-complete`,"true");
+                  (this.options as {complete: (el?: HTMLElement) => void}).complete(el);
                 }, css.totalDuration);
             }
             return;

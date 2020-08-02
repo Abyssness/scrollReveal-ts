@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "tsc": "tsc --outFile ./disk/package/scrollReveal.js ./src/package/scrollReveal-core/scrollReveal-core.ts -t es5 ./src/package/scrollReveal-core/scrollReveal.ts -t es5 ./src/package/scrollReveal-default/scrollReveal-default.ts -t es5",
+    "tsc": "tsc --outFile ./disk/package/scrollReveal.js ./src/package/scrollReveal-core/scrollReveal-core.ts -t es5 ./src/package/scrollReveal-core/scrollReveal.ts -t es5 ./src/package/scrollReveal-default/scrollReveal-default.ts -t es5 ./src/package/scrollReveal-plugin/scrollReveal-plugin.ts -t es5",
+    "core": "tsc --outFile ./disk/package/scrollReveal-core/scrollReveal-core.js ./src/package/scrollReveal-core/scrollReveal-core.ts -t es5 ./src/package/scrollReveal-core/scrollReveal.ts -t es5",
+    "default": "tsc --outFile ./disk/package/scrollRevealDefault.js ./src/package/scrollReveal-core/scrollReveal-core.ts -t es5 ./src/package/scrollReveal-core/scrollReveal.ts -t es5 ./src/package/scrollReveal-default/scrollReveal-default.ts -t es5",
     "build": "tsc -w"
   },
   "devDependencies": {

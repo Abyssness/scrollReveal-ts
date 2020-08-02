@@ -113,7 +113,7 @@ class ScrollRevealCore {
      */
     private _scrollPage() {
         this.elems.forEach((el, i) => {
-            this.update.call(this._this, el);;
+            this.update.call(this._this, el);
         });
         this.scrolled = false;
     }
