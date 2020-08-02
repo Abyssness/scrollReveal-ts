@@ -1,6 +1,6 @@
 # 编辑器
 .vscode
-.DS_Srore
+.DS_Store
 
 # Logs
 logs
@@ -25,5 +25,5 @@ jspm_packages/or
 .eslintcache
 
 # ts 文件生成目录
-disk
+# disk
 
