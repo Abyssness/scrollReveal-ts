@@ -64,10 +64,10 @@ var ScrollRevealCore = /** @class */ (function () {
         //  检查DOM的data-scrollReveal属性并初始化所有找到的元素。
         this.elems.forEach(function (el, i) {
             //  Capture original style attribute
-            var id = el.getAttribute("data-scroll-reveal-id");
+            var id = el.getAttribute(_this_1.options.queryCondition + "-id");
             if (!id) {
                 id = (_this_1.nextId++).toString();
-                el.setAttribute("data-scroll-reveal-id", id);
+                el.setAttribute(_this_1.options.queryCondition + "-id", id);
             }
             if (!_this_1.styleBank[id]) {
                 _this_1.styleBank[id] = el.getAttribute('style');
@@ -263,14 +263,14 @@ var ScrollRevealDefault = /** @class */ (function (_super) {
     ScrollRevealDefault.prototype.update = function (el) {
         var _this = this;
         var css = this.genCSS(el);
-        var style = this.coreInstance.getStyleBank[el.getAttribute("data-scroll-reveal-id")];
+        var style = this.coreInstance.getStyleBank[el.getAttribute(this.options.queryCondition + "-id")];
         if (style != null)
             style += ";";
         else
             style = "";
-        if (!el.getAttribute('data-scroll-reveal-initialized')) {
+        if (!el.getAttribute(this.options.queryCondition + "-initialized")) {
             el.setAttribute('style', style + css.initial);
-            el.setAttribute('data-scroll-reveal-initialized', "true");
+            el.setAttribute(this.options.queryCondition + "-initialized", "true");
         }
         if (!this.coreInstance.isElementInViewport(el, this.options.viewportFactor)) {
             if (this.options.reset) {
@@ -278,7 +278,7 @@ var ScrollRevealDefault = /** @class */ (function (_super) {
             }
             return;
         }
-        if (el.getAttribute('data-scroll-reveal-complete'))
+        if (el.getAttribute(this.options.queryCondition + "-complete"))
             return;
         if (this.coreInstance.isElementInViewport(el, this.options.viewportFactor)) {
             el.setAttribute('style', style + css.target + css.transition);
@@ -294,7 +294,7 @@ var ScrollRevealDefault = /** @class */ (function (_super) {
                     else {
                         el.removeAttribute('style');
                     }
-                    el.setAttribute('data-scroll-reveal-complete', "true");
+                    el.setAttribute(_this.options.queryCondition + "-complete", "true");
                     _this.options.complete(el);
                 }, css.totalDuration);
             }

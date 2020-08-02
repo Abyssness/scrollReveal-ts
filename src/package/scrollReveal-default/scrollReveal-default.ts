@@ -42,11 +42,11 @@ class ScrollRevealDefault extends ScrollReveal{
     }
     update(el: HTMLElement): void {
         let css = this.genCSS(el);
-        let style = this.coreInstance.getStyleBank[el.getAttribute("data-scroll-reveal-id") as string];
+        let style = this.coreInstance.getStyleBank[el.getAttribute(`${this.options.queryCondition}-id`) as string];
         if (style != null) style += ";"; else style = "";
-        if (!el.getAttribute('data-scroll-reveal-initialized')) {
+        if (!el.getAttribute(`${this.options.queryCondition}-initialized`)) {
             el.setAttribute('style', style + css.initial);
-            el.setAttribute('data-scroll-reveal-initialized', "true");
+            el.setAttribute(`${this.options.queryCondition}-initialized`, "true");
         }
         if (!this.coreInstance.isElementInViewport(el, this.options.viewportFactor)) {
             if (this.options.reset) {
@@ -54,7 +54,7 @@ class ScrollRevealDefault extends ScrollReveal{
             }
             return;
         }
-        if (el.getAttribute('data-scroll-reveal-complete')) return;
+        if (el.getAttribute(`${this.options.queryCondition}-complete`)) return;
 
         if (this.coreInstance.isElementInViewport(el, this.options.viewportFactor)) {
             el.setAttribute('style', style + css.target + css.transition);
@@ -69,7 +69,7 @@ class ScrollRevealDefault extends ScrollReveal{
                 } else {
                     el.removeAttribute('style');
                 }
-                el.setAttribute('data-scroll-reveal-complete',"true");
+                el.setAttribute(`${this.options.queryCondition}-complete`,"true");
                 (this.options as {complete: (el?: HTMLElement) => void}).complete(el);
                 }, css.totalDuration);
             }

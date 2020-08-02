@@ -52,10 +52,10 @@ var ScrollRevealCore = /** @class */ (function () {
         //  检查DOM的data-scrollReveal属性并初始化所有找到的元素。
         this.elems.forEach(function (el, i) {
             //  Capture original style attribute
-            var id = el.getAttribute("data-scroll-reveal-id");
+            var id = el.getAttribute(_this_1.options.queryCondition + "-id");
             if (!id) {
                 id = (_this_1.nextId++).toString();
-                el.setAttribute("data-scroll-reveal-id", id);
+                el.setAttribute(_this_1.options.queryCondition + "-id", id);
             }
             if (!_this_1.styleBank[id]) {
                 _this_1.styleBank[id] = el.getAttribute('style');

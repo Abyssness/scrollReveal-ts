@@ -61,10 +61,10 @@ class ScrollRevealCore {
         //  检查DOM的data-scrollReveal属性并初始化所有找到的元素。
         this.elems.forEach((el, i) => {
             //  Capture original style attribute
-            let id = el.getAttribute("data-scroll-reveal-id");
+            let id = el.getAttribute(`${this.options.queryCondition}-id`);
             if (!id) {
                 id = (this.nextId++).toString();
-                el.setAttribute("data-scroll-reveal-id", id);
+                el.setAttribute(`${this.options.queryCondition}-id`, id);
             }
             if (!this.styleBank[id]) {
               this.styleBank[id] = el.getAttribute('style');

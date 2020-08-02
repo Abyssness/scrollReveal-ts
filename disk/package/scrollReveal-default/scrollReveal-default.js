@@ -54,14 +54,14 @@ var ScrollRevealDefault = /** @class */ (function (_super) {
     ScrollRevealDefault.prototype.update = function (el) {
         var _this = this;
         var css = this.genCSS(el);
-        var style = this.coreInstance.getStyleBank[el.getAttribute("data-scroll-reveal-id")];
+        var style = this.coreInstance.getStyleBank[el.getAttribute(this.options.queryCondition + "-id")];
         if (style != null)
             style += ";";
         else
             style = "";
-        if (!el.getAttribute('data-scroll-reveal-initialized')) {
+        if (!el.getAttribute(this.options.queryCondition + "-initialized")) {
             el.setAttribute('style', style + css.initial);
-            el.setAttribute('data-scroll-reveal-initialized', "true");
+            el.setAttribute(this.options.queryCondition + "-initialized", "true");
         }
         if (!this.coreInstance.isElementInViewport(el, this.options.viewportFactor)) {
             if (this.options.reset) {
@@ -69,7 +69,7 @@ var ScrollRevealDefault = /** @class */ (function (_super) {
             }
             return;
         }
-        if (el.getAttribute('data-scroll-reveal-complete'))
+        if (el.getAttribute(this.options.queryCondition + "-complete"))
             return;
         if (this.coreInstance.isElementInViewport(el, this.options.viewportFactor)) {
             el.setAttribute('style', style + css.target + css.transition);
@@ -85,7 +85,7 @@ var ScrollRevealDefault = /** @class */ (function (_super) {
                     else {
                         el.removeAttribute('style');
                     }
-                    el.setAttribute('data-scroll-reveal-complete', "true");
+                    el.setAttribute(_this.options.queryCondition + "-complete", "true");
                     _this.options.complete(el);
                 }, css.totalDuration);
             }
