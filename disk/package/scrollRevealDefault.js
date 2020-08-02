@@ -164,6 +164,7 @@ var ScrollRevealCore = /** @class */ (function () {
             //  在不启用重置的情况下，我们可以安全地删除样式标签
             //  防止CSS与编辑过的CSS发生冲突。
             if (!this.options.reset) {
+                var time = this.pluginFunObject.animatedTimes.call(this.__this, el);
                 setTimeout(function () {
                     // if (style != "") {
                     //     el.setAttribute('style', style as string);
@@ -174,7 +175,7 @@ var ScrollRevealCore = /** @class */ (function () {
                         _this_1.pluginFunObject.clear(el);
                     el.setAttribute(_this_1.options.queryCondition + "-complete", "true");
                     _this_1.options.complete(el);
-                }, this.pluginFunObject.animatedTimes.call(this.__this, el));
+                }, time);
             }
             return;
         }
