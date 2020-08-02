@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "serve": "tsc",
+    "tsc": "tsc --outFile ./disk/package/scrollReveal.js ./src/package/scrollReveal-core/scrollReveal-core.ts -t es5 ./src/package/scrollReveal-core/scrollReveal.ts -t es5 ./src/package/scrollReveal-default/scrollReveal-default.ts -t es5",
     "build": "tsc -w"
   },
   "devDependencies": {
