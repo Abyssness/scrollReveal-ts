@@ -1,13 +1,16 @@
 /// <reference path="./../package/interface/interface.ts" />
 let scrollReveal: ScrollReveal;
-scrollReveal = new ScrollRevealDefault();
 
 let myAnimated: ScrollReveal;
 let funObj: pluginFunObject = {
-    init: () => console.log("init"),
-    animated: () => console.log("animated"),
-    reset: () => console.log("reset"),
-    clear: () => console.log("clear"),
-    animatedTimes: 3000
+    init: (el: HTMLElement) => {
+        console.log("init")
+        el.innerText = "init";
+    },
+    animated: (el: HTMLElement) => console.log("animated"),
+    reset: (el: HTMLElement) => console.log("reset"),
+    clear: (el: HTMLElement) => console.log("clear"),
+    animatedTimes: (el: HTMLElement) => 6000
 };
 myAnimated = new ScrollRevealPlugin(funObj,{});
+scrollReveal = new ScrollRevealDefault({reset: true});

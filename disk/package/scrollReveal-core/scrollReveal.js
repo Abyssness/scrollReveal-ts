@@ -7,7 +7,7 @@ var ScrollReveal = /** @class */ (function () {
     }
     // 子类构造器中调用
     ScrollReveal.prototype.setCore = function () {
-        this.scrollreveal.scrollRevealOptions(this.getOptions, this.update, this);
+        this.scrollreveal.scrollRevealOptions(this.getOptions(), this.getPluginFunObject, this);
     };
     ScrollReveal.prototype.getInstance = function () {
         return this.scrollreveal;

@@ -34,37 +34,7 @@ class ScrollRevealPlugin extends ScrollReveal {
     getOptions(): scrollRevealOptions {
         return this.options;
     }
-    update(el: HTMLElement): void {
-        if (!el.getAttribute(`${this.options.queryCondition}-initialized`)) {
-            this.isFun(this.pluginFunObject.init);
-            el.setAttribute(`${this.options.queryCondition}-initialized`, "true");
-        }
-        if (!this.coreInstance.isElementInViewport(el, this.options.viewportFactor)) {
-            if (this.options.reset) {
-                this.isFun(this.pluginFunObject.reset);
-            }
-            return;
-        }
-        if (el.getAttribute(`${this.options.queryCondition}-complete`)) return;
-
-        if (this.coreInstance.isElementInViewport(el, this.options.viewportFactor)) {
-            this.isFun(this.pluginFunObject.animated);
-            // 不重启安全清除动画
-            if (!this.options.reset) {
-                setTimeout(() => {
-                  this.isFun(this.pluginFunObject.clear);
-                  el.setAttribute(`${this.options.queryCondition}-complete`,"true");
-                  if (this.options.complete) (this.options as {complete: (el?: HTMLElement) => void}).complete(el);
-                //   (this.options as {complete: (el?: HTMLElement) => void}).complete(el);
-                }, this.pluginFunObject.animatedTimes);
-            }
-            return;
-        }
-    }
-    private isFun(literal: any) {
-        let result;
-        if(typeof literal === "function") result = literal();
-        else result = literal;
-        return result;
+    getPluginFunObject(el?: HTMLElement): pluginFunObject {
+        return this.pluginFunObject;
     }
 }

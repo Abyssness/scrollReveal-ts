@@ -45,42 +45,8 @@ var ScrollRevealPlugin = /** @class */ (function (_super) {
     ScrollRevealPlugin.prototype.getOptions = function () {
         return this.options;
     };
-    ScrollRevealPlugin.prototype.update = function (el) {
-        var _this = this;
-        if (!el.getAttribute(this.options.queryCondition + "-initialized")) {
-            this.isFun(this.pluginFunObject.init);
-            el.setAttribute(this.options.queryCondition + "-initialized", "true");
-        }
-        if (!this.coreInstance.isElementInViewport(el, this.options.viewportFactor)) {
-            if (this.options.reset) {
-                this.isFun(this.pluginFunObject.reset);
-            }
-            return;
-        }
-        if (el.getAttribute(this.options.queryCondition + "-complete"))
-            return;
-        if (this.coreInstance.isElementInViewport(el, this.options.viewportFactor)) {
-            this.isFun(this.pluginFunObject.animated);
-            // 不重启安全清除动画
-            if (!this.options.reset) {
-                setTimeout(function () {
-                    _this.isFun(_this.pluginFunObject.clear);
-                    el.setAttribute(_this.options.queryCondition + "-complete", "true");
-                    if (_this.options.complete)
-                        _this.options.complete(el);
-                    //   (this.options as {complete: (el?: HTMLElement) => void}).complete(el);
-                }, this.pluginFunObject.animatedTimes);
-            }
-            return;
-        }
-    };
-    ScrollRevealPlugin.prototype.isFun = function (literal) {
-        var result;
-        if (typeof literal === "function")
-            result = literal();
-        else
-            result = literal;
-        return result;
+    ScrollRevealPlugin.prototype.getPluginFunObject = function (el) {
+        return this.pluginFunObject;
     };
     return ScrollRevealPlugin;
 }(ScrollReveal));

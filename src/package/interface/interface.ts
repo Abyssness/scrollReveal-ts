@@ -1,7 +1,8 @@
 type callback = () => void;
 type animationFrame = (callback: callback) => void;
 type update = (el: HTMLElement) => void;
-type scrollOptionFun = (options: scrollRevealOptions, update: update, _this: any) => void;
+// type scrollOptionFun = (options: scrollRevealOptions, update: update, _this: any) => void;
+type scrollOptionFun = (options: scrollRevealOptions, pluginFun: (el?: HTMLElement) => pluginFunObject, _this: any) => void;
 
 interface Window { 
     mozRequestAnimationFrame: animationFrame; 
@@ -38,10 +39,10 @@ interface scrollRevealOptions {
     [propName: string]: any;
 }
 
-interface scrollRevealOptions {
-    time?: number;
-    delay?: number;
-}
+// interface scrollRevealOptions {
+//     time?: number;
+//     delay?: number;
+// }
 interface styleBank {
     [index: string]: string | null;
 }
@@ -63,11 +64,11 @@ interface parsed {
     opacity?: number;
 }
 interface pluginFunObject {
-    init: any;
-    animated: any;
-    animatedTimes: number;
-    reset?: any;
-    clear?: any;
+    init: (el: HTMLElement) => void;
+    animated: (el: HTMLElement) => void;
+    animatedTimes: (el: HTMLElement) => number;
+    reset?: (el: HTMLElement) => void;
+    clear?: (el: HTMLElement) => void;
     [propName: string]: any;
 }
 interface scrollReveal {

@@ -31,52 +31,96 @@ class ScrollRevealDefault extends ScrollReveal{
     };
     public options: scrollRevealOptions = {};
     public coreInstance: ScrollRevealCore;
+    private pluginFunObject: pluginFunObject;
     constructor(options?: scrollRevealOptions) {
         super();
         this.coreInstance = super.getInstance();
         this.options = options ? this.coreInstance.extend(this.defaultOptions, options) : this.defaultOptions;
+        this.pluginFunObject = {
+          init: this.animInit,
+          animated: this.animAnimated,
+          reset: this.animReset,
+          clear: this.animClear,
+          animatedTimes: this.animatedTimes,
+        }
         super.setCore();
     }
     getOptions(): scrollRevealOptions {
         return this.options;
     }
     update(el: HTMLElement): void {
-        let css = this.genCSS(el);
-        let style = this.coreInstance.getStyleBank[el.getAttribute(`${this.options.queryCondition}-id`) as string];
-        if (style != null) style += ";"; else style = "";
+        // let css = this.genCSS(el);
+        // let style = this.coreInstance.getStyleBank[el.getAttribute(`${this.options.queryCondition}-id`) as string];
+        // if (style != null) style += ";"; else style = "";
         if (!el.getAttribute(`${this.options.queryCondition}-initialized`)) {
-            el.setAttribute('style', style + css.initial);
+            // el.setAttribute('style', style + css.initial);
+            this.animInit(el);
             el.setAttribute(`${this.options.queryCondition}-initialized`, "true");
         }
         if (!this.coreInstance.isElementInViewport(el, this.options.viewportFactor)) {
             if (this.options.reset) {
-                el.setAttribute('style', style + css.initial + css.reset);
+                // el.setAttribute('style', style + css.initial + css.reset);
+                this.animReset(el);
             }
             return;
         }
         if (el.getAttribute(`${this.options.queryCondition}-complete`)) return;
 
         if (this.coreInstance.isElementInViewport(el, this.options.viewportFactor)) {
-            el.setAttribute('style', style + css.target + css.transition);
+            // el.setAttribute('style', style + css.target + css.transition);
+            this.animAnimated(el);
             //  Without reset enabled, we can safely remove the style tag
             //  to prevent CSS specificy wars with authored CSS.
             //  在不启用重置的情况下，我们可以安全地删除样式标签
             //  防止CSS与编辑过的CSS发生冲突。
             if (!this.options.reset) {
+                let css = this.init(el);
                 setTimeout(() => {
-                  if (style != "") {
-                      el.setAttribute('style', style as string);
-                  } else {
-                      el.removeAttribute('style');
-                  }
+                  // if (style != "") {
+                  //     el.setAttribute('style', style as string);
+                  // } else {
+                  //     el.removeAttribute('style');
+                  // }
+                  this.animClear(el);
                   el.setAttribute(`${this.options.queryCondition}-complete`,"true");
                   (this.options as {complete: (el?: HTMLElement) => void}).complete(el);
-                }, css.totalDuration);
+                }, css.css.totalDuration);
             }
             return;
         }
     }
-
+    getPluginFunObject(el?: HTMLElement): pluginFunObject {
+      return this.pluginFunObject;
+    }
+    private init(el: HTMLElement): {css: getCss, style: string} {
+      let css = this.genCSS(el);
+      let style = this.coreInstance.getStyleBank[el.getAttribute(`${this.options.queryCondition}-id`) as string];
+      if (style != null) style += ";"; else style = "";
+      return {css, style};
+    }
+    private animInit(el: HTMLElement): void {
+      let css = this.init(el);
+      el.setAttribute('style', css.style + css.css.initial);
+    }
+    private animAnimated(el: HTMLElement): void {
+      let css = this.init(el);
+      el.setAttribute('style', css.style + css.css.target + css.css.transition);
+    }
+    private animReset(el: HTMLElement): void {
+      let css = this.init(el);
+      el.setAttribute('style', css.style + css.css.initial + css.css.reset);
+    }
+    private animClear(el: HTMLElement): void {
+      let css = this.init(el);
+      if (css.style != "") {
+          el.setAttribute('style', css.style as string);
+      } else {
+          el.removeAttribute('style');
+      }
+    }
+    private animatedTimes(el: HTMLElement): number {    
+      return this.init(el).css.totalDuration;;
+    }
     private parseLanguage(el: HTMLElement): parsed {
         //  Splits on a sequence of one or more commas or spaces.
         let words: string[] = (<string>el.getAttribute(this.options.queryCondition as string)).split(/[, ]+/),

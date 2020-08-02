@@ -1,13 +1,16 @@
 "use strict";
 /// <reference path="./../package/interface/interface.ts" />
 var scrollReveal;
-scrollReveal = new ScrollRevealDefault();
 var myAnimated;
 var funObj = {
-    init: function () { return console.log("init"); },
-    animated: function () { return console.log("animated"); },
-    reset: function () { return console.log("reset"); },
-    clear: function () { return console.log("clear"); },
-    animatedTimes: 3000
+    init: function (el) {
+        console.log("init");
+        el.innerText = "init";
+    },
+    animated: function (el) { return console.log("animated"); },
+    reset: function (el) { return console.log("reset"); },
+    clear: function (el) { return console.log("clear"); },
+    animatedTimes: function (el) { return 6000; }
 };
 myAnimated = new ScrollRevealPlugin(funObj, {});
+scrollReveal = new ScrollRevealDefault({ reset: true });

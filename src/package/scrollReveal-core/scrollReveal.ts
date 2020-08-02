@@ -9,11 +9,11 @@ abstract class ScrollReveal{
     }
     // 子类构造器中调用
     protected setCore() {
-        this.scrollreveal.scrollRevealOptions(this.getOptions, this.update, this);
+        this.scrollreveal.scrollRevealOptions(this.getOptions(), this.getPluginFunObject, this);
     }
     protected getInstance() {
         return this.scrollreveal;
     }
     abstract getOptions(): scrollRevealOptions;
-    abstract update(el: HTMLElement): void;
+    abstract getPluginFunObject(el?: HTMLElement): pluginFunObject;
 }
