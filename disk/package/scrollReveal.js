@@ -171,8 +171,9 @@ var ScrollRevealCore = /** @class */ (function () {
                     // } else {
                     //     el.removeAttribute('style');
                     // }
-                    if (_this_1.pluginFunObject.clear)
-                        _this_1.pluginFunObject.clear(el);
+                    if (_this_1.pluginFunObject.clear) {
+                        _this_1.pluginFunObject.clear.call(_this_1.__this, el);
+                    }
                     el.setAttribute(_this_1.options.queryCondition + "-complete", "true");
                     _this_1.options.complete(el);
                 }, time);
@@ -311,48 +312,6 @@ var ScrollRevealDefault = /** @class */ (function (_super) {
     ScrollRevealDefault.prototype.getOptions = function () {
         return this.options;
     };
-    ScrollRevealDefault.prototype.update = function (el) {
-        var _this = this;
-        // let css = this.genCSS(el);
-        // let style = this.coreInstance.getStyleBank[el.getAttribute(`${this.options.queryCondition}-id`) as string];
-        // if (style != null) style += ";"; else style = "";
-        if (!el.getAttribute(this.options.queryCondition + "-initialized")) {
-            // el.setAttribute('style', style + css.initial);
-            this.animInit(el);
-            el.setAttribute(this.options.queryCondition + "-initialized", "true");
-        }
-        if (!this.coreInstance.isElementInViewport(el, this.options.viewportFactor)) {
-            if (this.options.reset) {
-                // el.setAttribute('style', style + css.initial + css.reset);
-                this.animReset(el);
-            }
-            return;
-        }
-        if (el.getAttribute(this.options.queryCondition + "-complete"))
-            return;
-        if (this.coreInstance.isElementInViewport(el, this.options.viewportFactor)) {
-            // el.setAttribute('style', style + css.target + css.transition);
-            this.animAnimated(el);
-            //  Without reset enabled, we can safely remove the style tag
-            //  to prevent CSS specificy wars with authored CSS.
-            //  在不启用重置的情况下，我们可以安全地删除样式标签
-            //  防止CSS与编辑过的CSS发生冲突。
-            if (!this.options.reset) {
-                var css = this.init(el);
-                setTimeout(function () {
-                    // if (style != "") {
-                    //     el.setAttribute('style', style as string);
-                    // } else {
-                    //     el.removeAttribute('style');
-                    // }
-                    _this.animClear(el);
-                    el.setAttribute(_this.options.queryCondition + "-complete", "true");
-                    _this.options.complete(el);
-                }, css.css.totalDuration);
-            }
-            return;
-        }
-    };
     ScrollRevealDefault.prototype.getPluginFunObject = function (el) {
         return this.pluginFunObject;
     };
@@ -366,19 +325,24 @@ var ScrollRevealDefault = /** @class */ (function (_super) {
         return { css: css, style: style };
     };
     ScrollRevealDefault.prototype.animInit = function (el) {
+      
         var css = this.init(el);
+        console.log("init")
         el.setAttribute('style', css.style + css.css.initial);
     };
     ScrollRevealDefault.prototype.animAnimated = function (el) {
         var css = this.init(el);
+        console.log("anim")
         el.setAttribute('style', css.style + css.css.target + css.css.transition);
     };
     ScrollRevealDefault.prototype.animReset = function (el) {
         var css = this.init(el);
+        console.log("reset")
         el.setAttribute('style', css.style + css.css.initial + css.css.reset);
     };
     ScrollRevealDefault.prototype.animClear = function (el) {
-        var css = this.init(el);
+      var css = this.init(el);
+      console.log("clear")
         if (css.style != "") {
             el.setAttribute('style', css.style);
         }

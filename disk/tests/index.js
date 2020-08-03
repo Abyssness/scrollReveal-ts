@@ -13,4 +13,4 @@ var funObj = {
     animatedTimes: function (el) { return 6000; }
 };
 myAnimated = new ScrollRevealPlugin(funObj, {});
-scrollReveal = new ScrollRevealDefault({ reset: true });
+scrollReveal = new ScrollRevealDefault({ reset: false });

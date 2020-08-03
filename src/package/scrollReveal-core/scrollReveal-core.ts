@@ -45,13 +45,13 @@ class ScrollRevealCore {
             window.mozRequestAnimationFrame ||
             window.msRequestAnimationFrame ||
             function (callback) { window.setTimeout(callback, 1000 / 60); }).bind(window);
-        this._scrollRevealOptions = (options: scrollRevealOptions, pluginFun: (el?: HTMLElement) => pluginFunObject, _this: any): void => {
+        this._scrollRevealOptions = (options: scrollRevealOptions, pluginFun: (el?: HTMLElement) => pluginFunObject, __this: any): void => {
             this.options = this.extend(this.defaultOptions, options);
             this.docElem = this.options.elem as HTMLElement;
             this.elems = this.getElemSet(`[${this.options.queryCondition}]`);
             this.pluginFun = pluginFun;
-            this.pluginFunObject = pluginFun.call(_this);
-            this.__this = _this;
+            this.pluginFunObject = pluginFun.call(__this);
+            this.__this = __this;
             if (this.options.init == true) this.init();
         }
     }
@@ -172,7 +172,7 @@ class ScrollRevealCore {
                   // } else {
                   //     el.removeAttribute('style');
                   // }
-                  if(this.pluginFunObject.clear) this.pluginFunObject.clear(el);
+                  if(this.pluginFunObject.clear) this.pluginFunObject.clear.call(this.__this, el);
                   el.setAttribute(`${this.options.queryCondition}-complete`,"true");
                   (this.options as {complete: (el?: HTMLElement) => void}).complete(el);
                 }, time);
