@@ -14,7 +14,7 @@ var __extends = (this && this.__extends) || (function () {
 /// <reference path="./../interface/interface.ts" />
 var ScrollRevealCore = /** @class */ (function () {
     function ScrollRevealCore() {
-        var _this_1 = this;
+        var _this = this;
         this.docElem = window.document.documentElement;
         this.defaultOptions = {
             //  if 0, the element is considered in the viewport as soon as it enters
@@ -47,42 +47,42 @@ var ScrollRevealCore = /** @class */ (function () {
             window.mozRequestAnimationFrame ||
             window.msRequestAnimationFrame ||
             function (callback) { window.setTimeout(callback, 1000 / 60); }).bind(window);
-        this._scrollRevealOptions = function (options, pluginFun, _this) {
-            _this_1.options = _this_1.extend(_this_1.defaultOptions, options);
-            _this_1.docElem = _this_1.options.elem;
-            _this_1.elems = _this_1.getElemSet("[" + _this_1.options.queryCondition + "]");
-            _this_1.pluginFun = pluginFun;
-            _this_1.pluginFunObject = pluginFun.call(_this);
-            _this_1.__this = _this;
-            if (_this_1.options.init == true)
-                _this_1.init();
+        this._scrollRevealOptions = function (options, pluginFun, __this) {
+            _this.options = _this.extend(_this.defaultOptions, options);
+            _this.docElem = _this.options.elem;
+            _this.elems = _this.getElemSet("[" + _this.options.queryCondition + "]");
+            _this.pluginFun = pluginFun;
+            _this.pluginFunObject = pluginFun.call(__this);
+            _this.__this = __this;
+            if (_this.options.init == true)
+                _this.init();
         };
     }
     ScrollRevealCore.prototype.init = function () {
-        var _this_1 = this;
+        var _this = this;
         this.scrolled = false;
         //  Check DOM for the data-scrollReveal attribute
         //  and initialize all found elements.
         //  检查DOM的data-scrollReveal属性并初始化所有找到的元素。
         this.elems.forEach(function (el, i) {
             //  Capture original style attribute
-            var id = el.getAttribute(_this_1.options.queryCondition + "-id");
+            var id = el.getAttribute(_this.options.queryCondition + "-id");
             if (!id) {
-                id = (_this_1.nextId++).toString();
-                el.setAttribute(_this_1.options.queryCondition + "-id", id);
+                id = (_this.nextId++).toString();
+                el.setAttribute(_this.options.queryCondition + "-id", id);
             }
-            if (!_this_1.styleBank[id]) {
-                _this_1.styleBank[id] = el.getAttribute('style');
+            if (!_this.styleBank[id]) {
+                _this.styleBank[id] = el.getAttribute('style');
             }
             // this.update.call(this.__this, el);
-            _this_1.updateDom(el);
+            _this.updateDom(el);
         });
         var scrollHandler = function () {
             // No changing, exit
-            if (!_this_1.scrolled) {
-                _this_1.scrolled = true;
-                _this_1._requestAnimFrame(function () {
-                    _this_1._scrollPage();
+            if (!_this.scrolled) {
+                _this.scrolled = true;
+                _this._requestAnimFrame(function () {
+                    _this._scrollPage();
                 });
             }
         };
@@ -92,14 +92,14 @@ var ScrollRevealCore = /** @class */ (function () {
         var resizeHandler = function () {
             //  If we’re still waiting for settimeout, reset the timer.
             // 如果我们仍然在等待 settimeout，重置计时器。
-            if (_this_1.resizeTimeout) {
-                clearTimeout(_this_1.resizeTimeout);
+            if (_this.resizeTimeout) {
+                clearTimeout(_this.resizeTimeout);
             }
             var delayed = function () {
-                _this_1._scrollPage();
-                _this_1.resizeTimeout = null;
+                _this._scrollPage();
+                _this.resizeTimeout = null;
             };
-            _this_1.resizeTimeout = setTimeout(delayed, 200);
+            _this.resizeTimeout = setTimeout(delayed, 200);
         };
         // captureScroll
         if (this.docElem == window.document.documentElement) {
@@ -114,10 +114,10 @@ var ScrollRevealCore = /** @class */ (function () {
      * 更新DOM
      */
     ScrollRevealCore.prototype._scrollPage = function () {
-        var _this_1 = this;
+        var _this = this;
         this.elems.forEach(function (el, i) {
             // this.update.call(this.__this, el);
-            _this_1.updateDom(el);
+            _this.updateDom(el);
         });
         this.scrolled = false;
     };
@@ -140,7 +140,7 @@ var ScrollRevealCore = /** @class */ (function () {
             return client;
     };
     ScrollRevealCore.prototype.updateDom = function (el) {
-        var _this_1 = this;
+        var _this = this;
         if (!el.getAttribute(this.options.queryCondition + "-initialized")) {
             // el.setAttribute('style', style + css.initial);
             this.pluginFunObject.init.call(this.__this, el);
@@ -171,11 +171,10 @@ var ScrollRevealCore = /** @class */ (function () {
                     // } else {
                     //     el.removeAttribute('style');
                     // }
-                    if (_this_1.pluginFunObject.clear) {
-                        _this_1.pluginFunObject.clear.call(_this_1.__this, el);
-                    }
-                    el.setAttribute(_this_1.options.queryCondition + "-complete", "true");
-                    _this_1.options.complete(el);
+                    if (_this.pluginFunObject.clear)
+                        _this.pluginFunObject.clear.call(_this.__this, el);
+                    el.setAttribute(_this.options.queryCondition + "-complete", "true");
+                    _this.options.complete(el);
                 }, time);
             }
             return;
@@ -312,6 +311,48 @@ var ScrollRevealDefault = /** @class */ (function (_super) {
     ScrollRevealDefault.prototype.getOptions = function () {
         return this.options;
     };
+    ScrollRevealDefault.prototype.update = function (el) {
+        var _this = this;
+        // let css = this.genCSS(el);
+        // let style = this.coreInstance.getStyleBank[el.getAttribute(`${this.options.queryCondition}-id`) as string];
+        // if (style != null) style += ";"; else style = "";
+        if (!el.getAttribute(this.options.queryCondition + "-initialized")) {
+            // el.setAttribute('style', style + css.initial);
+            this.animInit(el);
+            el.setAttribute(this.options.queryCondition + "-initialized", "true");
+        }
+        if (!this.coreInstance.isElementInViewport(el, this.options.viewportFactor)) {
+            if (this.options.reset) {
+                // el.setAttribute('style', style + css.initial + css.reset);
+                this.animReset(el);
+            }
+            return;
+        }
+        if (el.getAttribute(this.options.queryCondition + "-complete"))
+            return;
+        if (this.coreInstance.isElementInViewport(el, this.options.viewportFactor)) {
+            // el.setAttribute('style', style + css.target + css.transition);
+            this.animAnimated(el);
+            //  Without reset enabled, we can safely remove the style tag
+            //  to prevent CSS specificy wars with authored CSS.
+            //  在不启用重置的情况下，我们可以安全地删除样式标签
+            //  防止CSS与编辑过的CSS发生冲突。
+            if (!this.options.reset) {
+                var css = this.init(el);
+                setTimeout(function () {
+                    // if (style != "") {
+                    //     el.setAttribute('style', style as string);
+                    // } else {
+                    //     el.removeAttribute('style');
+                    // }
+                    _this.animClear(el);
+                    el.setAttribute(_this.options.queryCondition + "-complete", "true");
+                    _this.options.complete(el);
+                }, css.css.totalDuration);
+            }
+            return;
+        }
+    };
     ScrollRevealDefault.prototype.getPluginFunObject = function (el) {
         return this.pluginFunObject;
     };
@@ -325,24 +366,19 @@ var ScrollRevealDefault = /** @class */ (function (_super) {
         return { css: css, style: style };
     };
     ScrollRevealDefault.prototype.animInit = function (el) {
-      
         var css = this.init(el);
-        console.log("init")
         el.setAttribute('style', css.style + css.css.initial);
     };
     ScrollRevealDefault.prototype.animAnimated = function (el) {
         var css = this.init(el);
-        console.log("anim")
         el.setAttribute('style', css.style + css.css.target + css.css.transition);
     };
     ScrollRevealDefault.prototype.animReset = function (el) {
         var css = this.init(el);
-        console.log("reset")
         el.setAttribute('style', css.style + css.css.initial + css.css.reset);
     };
     ScrollRevealDefault.prototype.animClear = function (el) {
-      var css = this.init(el);
-      console.log("clear")
+        var css = this.init(el);
         if (css.style != "") {
             el.setAttribute('style', css.style);
         }
