@@ -10,7 +10,7 @@ let funObj: pluginFunObject = {
     animated: (el: HTMLElement) => console.log("animated"),
     reset: (el: HTMLElement) => console.log("reset"),
     clear: (el: HTMLElement) => console.log("clear"),
-    animatedTimes: (el: HTMLElement) => 6000
+    animatedTimes: (el: HTMLElement) => 500
 };
-myAnimated = new ScrollRevealPlugin(funObj,{});
-scrollReveal = new ScrollRevealDefault({reset: true});
+myAnimated = new ScrollRevealPlugin(funObj,{reset: true});
+scrollReveal = new ScrollRevealDefault({reset: false});

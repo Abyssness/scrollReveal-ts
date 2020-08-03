@@ -10,7 +10,7 @@ var funObj = {
     animated: function (el) { return console.log("animated"); },
     reset: function (el) { return console.log("reset"); },
     clear: function (el) { return console.log("clear"); },
-    animatedTimes: function (el) { return 6000; }
+    animatedTimes: function (el) { return 500; }
 };
-myAnimated = new ScrollRevealPlugin(funObj, {});
-scrollReveal = new ScrollRevealDefault({ reset: true });
+myAnimated = new ScrollRevealPlugin(funObj, { reset: true });
+scrollReveal = new ScrollRevealDefault({ reset: false });

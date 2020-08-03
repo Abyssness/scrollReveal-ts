@@ -10,35 +10,20 @@ class ScrollRevealCore {
     
     public docElem: HTMLElement = window.document.documentElement;
     
-    private defaultOptions: scrollRevealOptions = {
-        //  if 0, the element is considered in the viewport as soon as it enters
-        //  如果为0，则在该元素进入时立即在视窗中考虑
-        //  if 1, the element is considered in the viewport when it's fully visible
-        //  如果是1，则在元素完全可见时在视口中考虑它
-        viewportFactor: 0.33,
-
-        // if false, animations occur only once
-        // 如果为false，则只会出现一次动画
-        // if true, animations occur each time an element enters the viewport
-        // 如果为真，则每当一个元素进入视窗时，动画就会出现
-        reset: false,
-
-        // if true, scrollReveal.init() is automaticaly called upon instantiation
-        // 如果为真，则在实例化时自动调用scrollReveal.init()
-        init: true,
-        elem: window.document.documentElement,
-        queryCondition: "data-scroll-reveal"
-    }
+    
     protected scrolled: boolean = false;
     protected nextId: number = 0;
     protected styleBank: styleBank = {};
 
     public options: scrollRevealOptions = {};
-    protected elems: Array<HTMLElement> = [];   
+    private static _optionsSet: Set<scrollRevealOptions> = new Set();
+    protected elems: Array<HTMLElement> = [];
+    protected elemSet: HTMLElement[] = [];
     protected resizeTimeout: ReturnType<typeof setTimeout> | null = null; 
     private __this: scrollReveal | null = null;
     private pluginFun: (el?: HTMLElement) => pluginFunObject = () => <pluginFunObject>{};
     private pluginFunObject: pluginFunObject = <pluginFunObject>{};
+    private static _pluginFunMap: Map<string, pluginFunObject> = new Map();
     constructor() {
         this._requestAnimFrame = (window.requestAnimationFrame ||
             window.webkitRequestAnimationFrame ||
@@ -46,11 +31,14 @@ class ScrollRevealCore {
             window.msRequestAnimationFrame ||
             function (callback) { window.setTimeout(callback, 1000 / 60); }).bind(window);
         this._scrollRevealOptions = (options: scrollRevealOptions, pluginFun: (el?: HTMLElement) => pluginFunObject, __this: any): void => {
-            this.options = this.extend(this.defaultOptions, options);
+            this.options = options;
+            ScrollRevealCore._optionsSet.add(options);
             this.docElem = this.options.elem as HTMLElement;
             this.elems = this.getElemSet(`[${this.options.queryCondition}]`);
+            this.elemSet = [...this.elemSet, ...this.elems];
             this.pluginFun = pluginFun;
             this.pluginFunObject = pluginFun.call(__this);
+            ScrollRevealCore._pluginFunMap.set(this.options.queryCondition as string, this.pluginFunObject)
             this.__this = __this;
             if (this.options.init == true) this.init();
         }
@@ -115,8 +103,7 @@ class ScrollRevealCore {
      * 更新DOM
      */
     private _scrollPage() {
-        this.elems.forEach((el, i) => {
-            // this.update.call(this.__this, el);
+        this.elemSet.forEach((el, i) => {
             this.updateDom(el);
         });
         this.scrolled = false;
@@ -141,41 +128,44 @@ class ScrollRevealCore {
         else
             return client;
     }
-
+    private getElemQueryCond(el: HTMLElement): scrollRevealOptions | null {
+      let _optionsSet = Array.from(ScrollRevealCore._optionsSet);
+      for(let value of _optionsSet) {
+        if (el.getAttribute(`${value.queryCondition}`) !== null) return value;
+      }
+      return null;
+    }
     private updateDom(el: HTMLElement): void {
-        if (!el.getAttribute(`${this.options.queryCondition}-initialized`)) {
-            // el.setAttribute('style', style + css.initial);
-            this.pluginFunObject.init.call(this.__this, el);
-            el.setAttribute(`${this.options.queryCondition}-initialized`, "true");
+        let _options: scrollRevealOptions | null = this.getElemQueryCond(el);
+        if (_options === null) return;
+        _options = <scrollRevealOptions>_options;
+        let _pluginFunObject: pluginFunObject = <pluginFunObject>ScrollRevealCore._pluginFunMap.get(_options.queryCondition as string);
+        if (!el.getAttribute(`${_options.queryCondition}-initialized`)) {
+            _pluginFunObject.init.call(this.__this, el);
+            el.setAttribute(`${_options.queryCondition}-initialized`, "true");
         }
-        if (!this.isElementInViewport(el, this.options.viewportFactor)) {
-            if (this.options.reset) {
-                // el.setAttribute('style', style + css.initial + css.reset);
-                if(this.pluginFunObject.reset) this.pluginFunObject.reset.call(this.__this, el);
+        if (!this.isElementInViewport(el, _options.viewportFactor)) {
+            if (_options.reset) {
+                if(_pluginFunObject.reset) _pluginFunObject.reset.call(this.__this, el);
             }
             return;
         }
-        if (el.getAttribute(`${this.options.queryCondition}-complete`)) return;
+        if (el.getAttribute(`${_options.queryCondition}-complete`)) return;
 
-        if (this.isElementInViewport(el, this.options.viewportFactor)) {
-            // el.setAttribute('style', style + css.target + css.transition);
-            this.pluginFunObject.animated.call(this.__this, el);
+        if (this.isElementInViewport(el, _options.viewportFactor)) {
+            _pluginFunObject.animated.call(this.__this, el);
             //  Without reset enabled, we can safely remove the style tag
             //  to prevent CSS specificy wars with authored CSS.
             //  在不启用重置的情况下，我们可以安全地删除样式标签
             //  防止CSS与编辑过的CSS发生冲突。
-            if (!this.options.reset) {
-                let time = this.pluginFunObject.animatedTimes.call(this.__this, el);
-                setTimeout(() => {
-                  // if (style != "") {
-                  //     el.setAttribute('style', style as string);
-                  // } else {
-                  //     el.removeAttribute('style');
-                  // }
-                  if(this.pluginFunObject.clear) this.pluginFunObject.clear.call(this.__this, el);
-                  el.setAttribute(`${this.options.queryCondition}-complete`,"true");
-                  (this.options as {complete: (el?: HTMLElement) => void}).complete(el);
-                }, time);
+            if (!_options.reset) {
+                let time = _pluginFunObject.animatedTimes.call(this.__this, el);
+                let setTimeFun = (el: HTMLElement, _opt: scrollRevealOptions) => {
+                  if(_pluginFunObject.clear) _pluginFunObject.clear.call(this.__this, el);
+                  el.setAttribute(`${_opt.queryCondition}-complete`,"true");
+                  if("complete" in _opt) (_options as {complete: (el?: HTMLElement) => void}).complete(el);
+                  }
+                setTimeout(setTimeFun, time, el, _options);
             }
             return;
         }

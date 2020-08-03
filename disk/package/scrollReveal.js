@@ -1,3 +1,10 @@
+var __spreadArrays = (this && this.__spreadArrays) || function () {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
+};
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -16,28 +23,12 @@ var ScrollRevealCore = /** @class */ (function () {
     function ScrollRevealCore() {
         var _this = this;
         this.docElem = window.document.documentElement;
-        this.defaultOptions = {
-            //  if 0, the element is considered in the viewport as soon as it enters
-            //  如果为0，则在该元素进入时立即在视窗中考虑
-            //  if 1, the element is considered in the viewport when it's fully visible
-            //  如果是1，则在元素完全可见时在视口中考虑它
-            viewportFactor: 0.33,
-            // if false, animations occur only once
-            // 如果为false，则只会出现一次动画
-            // if true, animations occur each time an element enters the viewport
-            // 如果为真，则每当一个元素进入视窗时，动画就会出现
-            reset: false,
-            // if true, scrollReveal.init() is automaticaly called upon instantiation
-            // 如果为真，则在实例化时自动调用scrollReveal.init()
-            init: true,
-            elem: window.document.documentElement,
-            queryCondition: "data-scroll-reveal"
-        };
         this.scrolled = false;
         this.nextId = 0;
         this.styleBank = {};
         this.options = {};
         this.elems = [];
+        this.elemSet = [];
         this.resizeTimeout = null;
         this.__this = null;
         this.pluginFun = function () { return ({}); };
@@ -48,11 +39,14 @@ var ScrollRevealCore = /** @class */ (function () {
             window.msRequestAnimationFrame ||
             function (callback) { window.setTimeout(callback, 1000 / 60); }).bind(window);
         this._scrollRevealOptions = function (options, pluginFun, __this) {
-            _this.options = _this.extend(_this.defaultOptions, options);
+            _this.options = options;
+            ScrollRevealCore._optionsSet.add(options);
             _this.docElem = _this.options.elem;
             _this.elems = _this.getElemSet("[" + _this.options.queryCondition + "]");
+            _this.elemSet = __spreadArrays(_this.elemSet, _this.elems);
             _this.pluginFun = pluginFun;
             _this.pluginFunObject = pluginFun.call(__this);
+            ScrollRevealCore._pluginFunMap.set(_this.options.queryCondition, _this.pluginFunObject);
             _this.__this = __this;
             if (_this.options.init == true)
                 _this.init();
@@ -115,8 +109,7 @@ var ScrollRevealCore = /** @class */ (function () {
      */
     ScrollRevealCore.prototype._scrollPage = function () {
         var _this = this;
-        this.elems.forEach(function (el, i) {
-            // this.update.call(this.__this, el);
+        this.elemSet.forEach(function (el, i) {
             _this.updateDom(el);
         });
         this.scrolled = false;
@@ -139,43 +132,51 @@ var ScrollRevealCore = /** @class */ (function () {
         else
             return client;
     };
+    ScrollRevealCore.prototype.getElemQueryCond = function (el) {
+        var _optionsSet = Array.from(ScrollRevealCore._optionsSet);
+        for (var _i = 0, _optionsSet_1 = _optionsSet; _i < _optionsSet_1.length; _i++) {
+            var value = _optionsSet_1[_i];
+            if (el.getAttribute("" + value.queryCondition) !== null)
+                return value;
+        }
+        return null;
+    };
     ScrollRevealCore.prototype.updateDom = function (el) {
         var _this = this;
-        if (!el.getAttribute(this.options.queryCondition + "-initialized")) {
-            // el.setAttribute('style', style + css.initial);
-            this.pluginFunObject.init.call(this.__this, el);
-            el.setAttribute(this.options.queryCondition + "-initialized", "true");
+        var _options = this.getElemQueryCond(el);
+        if (_options === null)
+            return;
+        _options = _options;
+        var _pluginFunObject = ScrollRevealCore._pluginFunMap.get(_options.queryCondition);
+        if (!el.getAttribute(_options.queryCondition + "-initialized")) {
+            _pluginFunObject.init.call(this.__this, el);
+            el.setAttribute(_options.queryCondition + "-initialized", "true");
         }
-        if (!this.isElementInViewport(el, this.options.viewportFactor)) {
-            if (this.options.reset) {
-                // el.setAttribute('style', style + css.initial + css.reset);
-                if (this.pluginFunObject.reset)
-                    this.pluginFunObject.reset.call(this.__this, el);
+        if (!this.isElementInViewport(el, _options.viewportFactor)) {
+            if (_options.reset) {
+                if (_pluginFunObject.reset)
+                    _pluginFunObject.reset.call(this.__this, el);
             }
             return;
         }
-        if (el.getAttribute(this.options.queryCondition + "-complete"))
+        if (el.getAttribute(_options.queryCondition + "-complete"))
             return;
-        if (this.isElementInViewport(el, this.options.viewportFactor)) {
-            // el.setAttribute('style', style + css.target + css.transition);
-            this.pluginFunObject.animated.call(this.__this, el);
+        if (this.isElementInViewport(el, _options.viewportFactor)) {
+            _pluginFunObject.animated.call(this.__this, el);
             //  Without reset enabled, we can safely remove the style tag
             //  to prevent CSS specificy wars with authored CSS.
             //  在不启用重置的情况下，我们可以安全地删除样式标签
             //  防止CSS与编辑过的CSS发生冲突。
-            if (!this.options.reset) {
-                var time = this.pluginFunObject.animatedTimes.call(this.__this, el);
-                setTimeout(function () {
-                    // if (style != "") {
-                    //     el.setAttribute('style', style as string);
-                    // } else {
-                    //     el.removeAttribute('style');
-                    // }
-                    if (_this.pluginFunObject.clear)
-                        _this.pluginFunObject.clear.call(_this.__this, el);
-                    el.setAttribute(_this.options.queryCondition + "-complete", "true");
-                    _this.options.complete(el);
-                }, time);
+            if (!_options.reset) {
+                var time = _pluginFunObject.animatedTimes.call(this.__this, el);
+                var setTimeFun = function (el, _opt) {
+                    if (_pluginFunObject.clear)
+                        _pluginFunObject.clear.call(_this.__this, el);
+                    el.setAttribute(_opt.queryCondition + "-complete", "true");
+                    if ("complete" in _opt)
+                        _options.complete(el);
+                };
+                setTimeout(setTimeFun, time, el, _options);
             }
             return;
         }
@@ -248,6 +249,8 @@ var ScrollRevealCore = /** @class */ (function () {
         configurable: true
     });
     ScrollRevealCore._instance = new ScrollRevealCore();
+    ScrollRevealCore._optionsSet = new Set();
+    ScrollRevealCore._pluginFunMap = new Map();
     return ScrollRevealCore;
 }());
 /// <reference path="./../interface/interface.ts" />
