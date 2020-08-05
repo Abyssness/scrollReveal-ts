@@ -71,6 +71,10 @@ interface pluginFunObject {
     clear?: (el: HTMLElement) => void;
     [propName: string]: any;
 }
+interface pluginInterface {
+  _this: ScrollReveal;
+  _pluginFunObject: pluginFunObject;
+}
 interface scrollReveal {
     update(el: HTMLElement): void;
 }

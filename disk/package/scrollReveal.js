@@ -21,7 +21,7 @@ var __extends = (this && this.__extends) || (function () {
 /// <reference path="./../interface/interface.ts" />
 var ScrollRevealCore = /** @class */ (function () {
     function ScrollRevealCore() {
-        var _this = this;
+        var _this_1 = this;
         this.docElem = window.document.documentElement;
         this.scrolled = false;
         this.nextId = 0;
@@ -30,7 +30,6 @@ var ScrollRevealCore = /** @class */ (function () {
         this.elems = [];
         this.elemSet = [];
         this.resizeTimeout = null;
-        this.__this = null;
         this.pluginFun = function () { return ({}); };
         this.pluginFunObject = {};
         this._requestAnimFrame = (window.requestAnimationFrame ||
@@ -39,44 +38,46 @@ var ScrollRevealCore = /** @class */ (function () {
             window.msRequestAnimationFrame ||
             function (callback) { window.setTimeout(callback, 1000 / 60); }).bind(window);
         this._scrollRevealOptions = function (options, pluginFun, __this) {
-            _this.options = options;
+            _this_1.options = options;
             ScrollRevealCore._optionsSet.add(options);
-            _this.docElem = _this.options.elem;
-            _this.elems = _this.getElemSet("[" + _this.options.queryCondition + "]");
-            _this.elemSet = __spreadArrays(_this.elemSet, _this.elems);
-            _this.pluginFun = pluginFun;
-            _this.pluginFunObject = pluginFun.call(__this);
-            ScrollRevealCore._pluginFunMap.set(_this.options.queryCondition, _this.pluginFunObject);
-            _this.__this = __this;
-            if (_this.options.init == true)
-                _this.init();
+            _this_1.docElem = _this_1.options.elem;
+            _this_1.elems = _this_1.getElemSet("[" + _this_1.options.queryCondition + "]");
+            _this_1.elemSet = __spreadArrays(_this_1.elemSet, _this_1.elems);
+            _this_1.pluginFun = pluginFun;
+            _this_1.pluginFunObject = pluginFun.call(__this);
+            var pluginInter = {
+                _this: __this,
+                _pluginFunObject: _this_1.pluginFunObject
+            };
+            ScrollRevealCore._pluginFunMap.set(_this_1.options.queryCondition, pluginInter);
+            if (_this_1.options.init == true)
+                _this_1.init();
         };
     }
     ScrollRevealCore.prototype.init = function () {
-        var _this = this;
+        var _this_1 = this;
         this.scrolled = false;
         //  Check DOM for the data-scrollReveal attribute
         //  and initialize all found elements.
         //  检查DOM的data-scrollReveal属性并初始化所有找到的元素。
         this.elems.forEach(function (el, i) {
             //  Capture original style attribute
-            var id = el.getAttribute(_this.options.queryCondition + "-id");
+            var id = el.getAttribute(_this_1.options.queryCondition + "-id");
             if (!id) {
-                id = (_this.nextId++).toString();
-                el.setAttribute(_this.options.queryCondition + "-id", id);
+                id = (_this_1.nextId++).toString();
+                el.setAttribute(_this_1.options.queryCondition + "-id", id);
             }
-            if (!_this.styleBank[id]) {
-                _this.styleBank[id] = el.getAttribute('style');
+            if (!_this_1.styleBank[id]) {
+                _this_1.styleBank[id] = el.getAttribute('style');
             }
-            // this.update.call(this.__this, el);
-            _this.updateDom(el);
+            _this_1.updateDom(el);
         });
         var scrollHandler = function () {
             // No changing, exit
-            if (!_this.scrolled) {
-                _this.scrolled = true;
-                _this._requestAnimFrame(function () {
-                    _this._scrollPage();
+            if (!_this_1.scrolled) {
+                _this_1.scrolled = true;
+                _this_1._requestAnimFrame(function () {
+                    _this_1._scrollPage();
                 });
             }
         };
@@ -86,14 +87,14 @@ var ScrollRevealCore = /** @class */ (function () {
         var resizeHandler = function () {
             //  If we’re still waiting for settimeout, reset the timer.
             // 如果我们仍然在等待 settimeout，重置计时器。
-            if (_this.resizeTimeout) {
-                clearTimeout(_this.resizeTimeout);
+            if (_this_1.resizeTimeout) {
+                clearTimeout(_this_1.resizeTimeout);
             }
             var delayed = function () {
-                _this._scrollPage();
-                _this.resizeTimeout = null;
+                _this_1._scrollPage();
+                _this_1.resizeTimeout = null;
             };
-            _this.resizeTimeout = setTimeout(delayed, 200);
+            _this_1.resizeTimeout = setTimeout(delayed, 200);
         };
         // captureScroll
         if (this.docElem == window.document.documentElement) {
@@ -108,9 +109,9 @@ var ScrollRevealCore = /** @class */ (function () {
      * 更新DOM
      */
     ScrollRevealCore.prototype._scrollPage = function () {
-        var _this = this;
+        var _this_1 = this;
         this.elemSet.forEach(function (el, i) {
-            _this.updateDom(el);
+            _this_1.updateDom(el);
         });
         this.scrolled = false;
     };
@@ -142,36 +143,37 @@ var ScrollRevealCore = /** @class */ (function () {
         return null;
     };
     ScrollRevealCore.prototype.updateDom = function (el) {
-        var _this = this;
         var _options = this.getElemQueryCond(el);
         if (_options === null)
             return;
         _options = _options;
-        var _pluginFunObject = ScrollRevealCore._pluginFunMap.get(_options.queryCondition);
+        var _pluginInter = ScrollRevealCore._pluginFunMap.get(_options.queryCondition);
+        var _pluginFunObject = _pluginInter._pluginFunObject;
+        var __this = _pluginInter._this;
         if (!el.getAttribute(_options.queryCondition + "-initialized")) {
-            _pluginFunObject.init.call(this.__this, el);
+            _pluginFunObject.init.call(__this, el);
             el.setAttribute(_options.queryCondition + "-initialized", "true");
         }
         if (!this.isElementInViewport(el, _options.viewportFactor)) {
             if (_options.reset) {
                 if (_pluginFunObject.reset)
-                    _pluginFunObject.reset.call(this.__this, el);
+                    _pluginFunObject.reset.call(__this, el);
             }
             return;
         }
         if (el.getAttribute(_options.queryCondition + "-complete"))
             return;
         if (this.isElementInViewport(el, _options.viewportFactor)) {
-            _pluginFunObject.animated.call(this.__this, el);
+            _pluginFunObject.animated.call(__this, el);
             //  Without reset enabled, we can safely remove the style tag
             //  to prevent CSS specificy wars with authored CSS.
             //  在不启用重置的情况下，我们可以安全地删除样式标签
             //  防止CSS与编辑过的CSS发生冲突。
             if (!_options.reset) {
-                var time = _pluginFunObject.animatedTimes.call(this.__this, el);
+                var time = _pluginFunObject.animatedTimes.call(__this, el);
                 var setTimeFun = function (el, _opt) {
                     if (_pluginFunObject.clear)
-                        _pluginFunObject.clear.call(_this.__this, el);
+                        _pluginFunObject.clear.call(__this, el);
                     el.setAttribute(_opt.queryCondition + "-complete", "true");
                     if ("complete" in _opt)
                         _options.complete(el);
@@ -313,48 +315,6 @@ var ScrollRevealDefault = /** @class */ (function (_super) {
     }
     ScrollRevealDefault.prototype.getOptions = function () {
         return this.options;
-    };
-    ScrollRevealDefault.prototype.update = function (el) {
-        var _this = this;
-        // let css = this.genCSS(el);
-        // let style = this.coreInstance.getStyleBank[el.getAttribute(`${this.options.queryCondition}-id`) as string];
-        // if (style != null) style += ";"; else style = "";
-        if (!el.getAttribute(this.options.queryCondition + "-initialized")) {
-            // el.setAttribute('style', style + css.initial);
-            this.animInit(el);
-            el.setAttribute(this.options.queryCondition + "-initialized", "true");
-        }
-        if (!this.coreInstance.isElementInViewport(el, this.options.viewportFactor)) {
-            if (this.options.reset) {
-                // el.setAttribute('style', style + css.initial + css.reset);
-                this.animReset(el);
-            }
-            return;
-        }
-        if (el.getAttribute(this.options.queryCondition + "-complete"))
-            return;
-        if (this.coreInstance.isElementInViewport(el, this.options.viewportFactor)) {
-            // el.setAttribute('style', style + css.target + css.transition);
-            this.animAnimated(el);
-            //  Without reset enabled, we can safely remove the style tag
-            //  to prevent CSS specificy wars with authored CSS.
-            //  在不启用重置的情况下，我们可以安全地删除样式标签
-            //  防止CSS与编辑过的CSS发生冲突。
-            if (!this.options.reset) {
-                var css = this.init(el);
-                setTimeout(function () {
-                    // if (style != "") {
-                    //     el.setAttribute('style', style as string);
-                    // } else {
-                    //     el.removeAttribute('style');
-                    // }
-                    _this.animClear(el);
-                    el.setAttribute(_this.options.queryCondition + "-complete", "true");
-                    _this.options.complete(el);
-                }, css.css.totalDuration);
-            }
-            return;
-        }
     };
     ScrollRevealDefault.prototype.getPluginFunObject = function (el) {
         return this.pluginFunObject;

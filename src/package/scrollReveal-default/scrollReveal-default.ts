@@ -48,47 +48,6 @@ class ScrollRevealDefault extends ScrollReveal{
     getOptions(): scrollRevealOptions {
         return this.options;
     }
-    update(el: HTMLElement): void {
-        // let css = this.genCSS(el);
-        // let style = this.coreInstance.getStyleBank[el.getAttribute(`${this.options.queryCondition}-id`) as string];
-        // if (style != null) style += ";"; else style = "";
-        if (!el.getAttribute(`${this.options.queryCondition}-initialized`)) {
-            // el.setAttribute('style', style + css.initial);
-            this.animInit(el);
-            el.setAttribute(`${this.options.queryCondition}-initialized`, "true");
-        }
-        if (!this.coreInstance.isElementInViewport(el, this.options.viewportFactor)) {
-            if (this.options.reset) {
-                // el.setAttribute('style', style + css.initial + css.reset);
-                this.animReset(el);
-            }
-            return;
-        }
-        if (el.getAttribute(`${this.options.queryCondition}-complete`)) return;
-
-        if (this.coreInstance.isElementInViewport(el, this.options.viewportFactor)) {
-            // el.setAttribute('style', style + css.target + css.transition);
-            this.animAnimated(el);
-            //  Without reset enabled, we can safely remove the style tag
-            //  to prevent CSS specificy wars with authored CSS.
-            //  在不启用重置的情况下，我们可以安全地删除样式标签
-            //  防止CSS与编辑过的CSS发生冲突。
-            if (!this.options.reset) {
-                let css = this.init(el);
-                setTimeout(() => {
-                  // if (style != "") {
-                  //     el.setAttribute('style', style as string);
-                  // } else {
-                  //     el.removeAttribute('style');
-                  // }
-                  this.animClear(el);
-                  el.setAttribute(`${this.options.queryCondition}-complete`,"true");
-                  (this.options as {complete: (el?: HTMLElement) => void}).complete(el);
-                }, css.css.totalDuration);
-            }
-            return;
-        }
-    }
     getPluginFunObject(el?: HTMLElement): pluginFunObject {
       return this.pluginFunObject;
     }

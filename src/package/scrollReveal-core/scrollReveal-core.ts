@@ -20,10 +20,9 @@ class ScrollRevealCore {
     protected elems: Array<HTMLElement> = [];
     protected elemSet: HTMLElement[] = [];
     protected resizeTimeout: ReturnType<typeof setTimeout> | null = null; 
-    private __this: scrollReveal | null = null;
     private pluginFun: (el?: HTMLElement) => pluginFunObject = () => <pluginFunObject>{};
     private pluginFunObject: pluginFunObject = <pluginFunObject>{};
-    private static _pluginFunMap: Map<string, pluginFunObject> = new Map();
+    private static _pluginFunMap: Map<string, pluginInterface> = new Map();
     constructor() {
         this._requestAnimFrame = (window.requestAnimationFrame ||
             window.webkitRequestAnimationFrame ||
@@ -38,8 +37,11 @@ class ScrollRevealCore {
             this.elemSet = [...this.elemSet, ...this.elems];
             this.pluginFun = pluginFun;
             this.pluginFunObject = pluginFun.call(__this);
-            ScrollRevealCore._pluginFunMap.set(this.options.queryCondition as string, this.pluginFunObject)
-            this.__this = __this;
+            let pluginInter = {
+              _this: __this,
+              _pluginFunObject: this.pluginFunObject
+            }
+            ScrollRevealCore._pluginFunMap.set(this.options.queryCondition as string, pluginInter);
             if (this.options.init == true) this.init();
         }
     }
@@ -59,7 +61,6 @@ class ScrollRevealCore {
             if (!this.styleBank[id]) {
               this.styleBank[id] = el.getAttribute('style');
             }
-            // this.update.call(this.__this, el);
             this.updateDom(el);
         });
         let scrollHandler = () => {
@@ -139,29 +140,31 @@ class ScrollRevealCore {
         let _options: scrollRevealOptions | null = this.getElemQueryCond(el);
         if (_options === null) return;
         _options = <scrollRevealOptions>_options;
-        let _pluginFunObject: pluginFunObject = <pluginFunObject>ScrollRevealCore._pluginFunMap.get(_options.queryCondition as string);
+        let _pluginInter: pluginInterface = <pluginInterface>ScrollRevealCore._pluginFunMap.get(_options.queryCondition as string);
+        let _pluginFunObject = _pluginInter._pluginFunObject;
+        let __this = _pluginInter._this;
         if (!el.getAttribute(`${_options.queryCondition}-initialized`)) {
-            _pluginFunObject.init.call(this.__this, el);
+            _pluginFunObject.init.call(__this, el);
             el.setAttribute(`${_options.queryCondition}-initialized`, "true");
         }
         if (!this.isElementInViewport(el, _options.viewportFactor)) {
             if (_options.reset) {
-                if(_pluginFunObject.reset) _pluginFunObject.reset.call(this.__this, el);
+                if(_pluginFunObject.reset) _pluginFunObject.reset.call(__this, el);
             }
             return;
         }
         if (el.getAttribute(`${_options.queryCondition}-complete`)) return;
 
         if (this.isElementInViewport(el, _options.viewportFactor)) {
-            _pluginFunObject.animated.call(this.__this, el);
+            _pluginFunObject.animated.call(__this, el);
             //  Without reset enabled, we can safely remove the style tag
             //  to prevent CSS specificy wars with authored CSS.
             //  在不启用重置的情况下，我们可以安全地删除样式标签
             //  防止CSS与编辑过的CSS发生冲突。
             if (!_options.reset) {
-                let time = _pluginFunObject.animatedTimes.call(this.__this, el);
+                let time = _pluginFunObject.animatedTimes.call(__this, el);
                 let setTimeFun = (el: HTMLElement, _opt: scrollRevealOptions) => {
-                  if(_pluginFunObject.clear) _pluginFunObject.clear.call(this.__this, el);
+                  if(_pluginFunObject.clear) _pluginFunObject.clear.call(__this, el);
                   el.setAttribute(`${_opt.queryCondition}-complete`,"true");
                   if("complete" in _opt) (_options as {complete: (el?: HTMLElement) => void}).complete(el);
                   }
